@@ -116,12 +116,12 @@ var gravity = -0.2;
 
 var player = new Player({
     radius: 0.5,
-    moveStrength: new Vector3(0.4, 0.03, 0.4),
+    moveStrength: new Vector3(0.5, 0.03, 0.5),
     jumpStrength: 0.75,
     global: {
         body: {
             acceleration: new Vector3(0, gravity, 0),
-            position: new Vector3(0,15,0),
+            position: new Vector3(0,80,0),
             linearDamping: new Vector3(0.06, 0, 0.06),
             angularDamping: 1
         }

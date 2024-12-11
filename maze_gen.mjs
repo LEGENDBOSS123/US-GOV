@@ -25,9 +25,35 @@ var node = class {
         this.correctPath = ["left", "middle", "right"][Math.floor(Math.random() * 3)];
         this.position = new Vector3(0, 0, 0);
         this.direction = new Vector3(150, 0, 0);
-       
+        
+
         this.angleRotate = 90;
         this.depth = depth;
+    }
+
+    color(){
+        this.color = null;
+        while(true){
+            this.color = ["green", "red", "blue", "yellow"][Math.floor(Math.random() * 4)];
+            if((this.color == this.parent?.color) + (this.color == this.parent?.left?.color) + (this.color == this.parent?.middle?.color) + (this.color == this.parent?.right?.color) <= 1){
+                break;
+            }
+        }
+        this.left?.color();
+        this.middle?.color();
+        this.right?.color();
+    }
+
+    intersections(callback, winCallback){
+        if(this.end){
+            winCallback(this.position.add(this.direction), this);
+        }
+        if((this.left != null) + (this.middle != null) + (this.right != null) > 1){
+            callback(this.position.add(this.direction), this);
+        }
+        this.left?.intersections(...arguments);
+        this.middle?.intersections(...arguments);
+        this.right?.intersections(...arguments);
     }
 
     split(){
@@ -60,6 +86,9 @@ var node = class {
             this.left?.split();
             this.middle?.split();
             this.right?.split();
+        }
+        else{
+            this.end = true;
         }
     }
 
@@ -122,11 +151,20 @@ var node = class {
     }
 }
 
+
+
+
 class maze_gen {
     constructor(graphicsEngine, world) {
         this.graphicsEngine = graphicsEngine;
         this.world = world;
-        this.height = 30;
+        this.map = this.graphicsEngine.textureLoader.load("3D/Graphics/Textures/rockyGround.jpg");
+        this.map.wrapS = this.map.wrapT = THREE.RepeatWrapping;
+        this.map.repeat.set(5, 5);
+        this.winMap = this.graphicsEngine.textureLoader.load("3D/Graphics/Textures/checkerboard.jpg");
+        this.winMap.wrapS = this.winMap.wrapT = THREE.RepeatWrapping;
+        this.winMap.repeat.set(1, 3);
+        this.height = 100;
         endpoints = new Set([JSON.stringify(new Vector3().toJSON())]);
         this.head = new node(30);
         this.head.split();
@@ -137,10 +175,10 @@ class maze_gen {
             this.head.split();
         }
         this.head.addFakes();
+        this.head.color();
+        this.head.intersections(this.createIntersection.bind(this), this.createWin.bind(this));
         top.maze = this;
-        this.map = this.graphicsEngine.textureLoader.load("3D/Graphics/Textures/rockyGround.jpg");
-        this.map.wrapS = this.map.wrapT = THREE.RepeatWrapping;
-        this.map.repeat.set(5, 5);
+        
     }
 
     createFloor(player) {
@@ -181,6 +219,83 @@ class maze_gen {
         this.world.addComposite(box);
         this.graphicsEngine.addToScene(box.mesh);
     }
+    createIntersection(pos, node){
+        pos.y += this.height/2;
+        var box = new Box({
+            width:  10 + Math.random(),
+            height: 4,
+            depth: 10 + Math.random(),
+            local: {
+                body: {
+                    mass: Infinity,
+                }
+            },
+            global: {
+                body: {
+                    position: pos
+                }
+            }
+        });
+        box.setMesh({
+            material: new THREE.MeshPhongMaterial({
+                color: "white"
+            })
+        }, THREE);
+        box.preCollisionCallback = function (contact) {
+            if (contact.body1.maxParent == player || contact.body2.maxParent == player) {
+                if(node.correctPath == null){
+                    console.log(node.color)
+                }
+                else{
+                    console.log(node[node.correctPath].color)
+                }
+            }
+        }
+        box.setRestitution(0);
+        box.setFriction(0);
+        box.mesh.castShadow = true;
+        box.mesh.receiveShadow = true;
+        
+        box.setLocalFlag(Composite.FLAGS.STATIC, true);
+        this.world.addComposite(box);
+        this.graphicsEngine.addToScene(box.mesh);
+    }
+    createWin(pos, node){
+        pos.y += this.height/2;
+        var box = new Box({
+            width:  10 + Math.random(),
+            height: 30,
+            depth: 10 + Math.random(),
+            local: {
+                body: {
+                    mass: Infinity,
+                }
+            },
+            global: {
+                body: {
+                    position: pos
+                }
+            }
+        });
+        box.setMesh({
+            material: new THREE.MeshPhongMaterial({
+                map: this.winMap
+            })
+        }, THREE);
+        box.preCollisionCallback = function (contact) {
+            if (contact.body1.maxParent == player || contact.body2.maxParent == player) {
+                alert("you win");
+            }
+        }
+        box.setRestitution(0);
+        box.setFriction(0);
+        box.mesh.castShadow = true;
+        box.mesh.receiveShadow = true;
+        
+        box.setLocalFlag(Composite.FLAGS.STATIC, true);
+        this.world.addComposite(box);
+        this.graphicsEngine.addToScene(box.mesh);
+    }
     createSphereAtPos(pos, rad) {
         var sphereMesh = new THREE.Mesh(
             new THREE.SphereGeometry(rad, 32, 32),
@@ -204,9 +319,9 @@ class maze_gen {
         var normDir = direction.normalize();
         var quat = Quaternion.lookAt(normDir, new Vector3(0, 1, 0));
         var box = new Box({
-            width:  10,
-            height: this.height,
-            depth: direction.magnitude(),
+            width:  10 + Math.random(),
+            height: this.height + Math.random(),
+            depth: direction.magnitude() + 10,
             local: {
                 body: {
                     mass: Infinity,
@@ -222,7 +337,7 @@ class maze_gen {
         
         box.setMesh({
             material: new THREE.MeshPhongMaterial({
-                map: this.map
+                color: node.color
             })
         }, THREE);
         box.setRestitution(0);
