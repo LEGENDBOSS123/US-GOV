@@ -122,7 +122,7 @@ var player = new Player({
         body: {
             acceleration: new Vector3(0, gravity, 0),
             position: new Vector3(0,15,0),
-            linearDamping: new Vector3(0.08, 0, 0.08),
+            linearDamping: new Vector3(0.06, 0, 0.06),
             angularDamping: 1
         }
     },

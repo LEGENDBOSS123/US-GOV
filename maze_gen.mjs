@@ -24,7 +24,7 @@ var node = class {
         this.paths = 1;
         this.correctPath = ["left", "middle", "right"][Math.floor(Math.random() * 3)];
         this.position = new Vector3(0, 0, 0);
-        this.direction = new Vector3(50, 0, 0);
+        this.direction = new Vector3(150, 0, 0);
        
         this.angleRotate = 90;
         this.depth = depth;
