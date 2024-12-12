@@ -469,13 +469,12 @@ var CollisionDetector = class {
 
             contact.point = contactPoint;
 
-
             contact.normal = spherePos.subtract(contactPoint).normalizeInPlace();
             contact.velocity = sphere1.getVelocityAtPosition(contact.point).subtractInPlace(box1.getVelocityAtPosition(contact.point));
             contact.penetration = contact.normal.scale(sphere1.radius + contactPoint.distance(spherePos));
             contact.body1 = sphere1;
             contact.body2 = box1;
-            console.log(contact);
+            this.addContact(contact);
             return true;
         }
 

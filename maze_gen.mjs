@@ -58,7 +58,7 @@ var possible_answers = ["Judicial Branch", "Executive Branch", "Legislative Bran
 
 var isCloseToAnyEndpoint = function (pos) {
     for (var i of endpoints) {
-        if (pos.distance(JSON.parse(i)) < 20) {
+        if (pos.distance(JSON.parse(i)) < 10) {
             return true;
         }
     }
@@ -73,7 +73,7 @@ var node = class {
         this.right = null;
         this.correctPath = ["left", "middle", "right"][Math.floor(Math.random() * 3)];
         this.position = new Vector3(0, 0, 0);
-        this.direction = new Vector3(150, 0, 0);
+        this.direction = new Vector3(200, 0, 0);
 
 
         this.angleRotate = 60;
@@ -295,7 +295,7 @@ class maze_gen {
         var element = document.createElement("div");
         element.style.width = "600px";
         element.style.height = "400px";
-        element.style.backgroundColor = "rgba(50, 50, 50, 0.9)";
+        element.style.backgroundColor = "rgba(50, 50, 50, 0.95)";
         element.style.border = "4px solid black";
         element.style.top = "50%";
         element.style.left = "50%";
@@ -588,6 +588,7 @@ class maze_gen {
         box.preCollisionCallback = function (contact) {
             if (contact.body1.maxParent == player || contact.body2.maxParent == player) {
                 alert("you win");
+                player.respawn();
             }
         }
         box.setRestitution(0);
@@ -622,7 +623,7 @@ class maze_gen {
         var normDir = direction.normalize();
         var quat = Quaternion.lookAt(normDir, new Vector3(0, 1, 0));
         var box = new Box({
-            width: 10 + Math.random(),
+            width: 15 + Math.random(),
             height: this.height + Math.random(),
             depth: direction.magnitude() + 10,
             local: {

@@ -49,7 +49,7 @@ graphicsEngine.setBackgroundImage("3D/Graphics/Textures/autumn_field_puresky_8k.
 
 graphicsEngine.setSunlightDirection(new Vector3(-2, -8, -5));
 graphicsEngine.setSunlightBrightness(1);
-
+graphicsEngine.disableAO();
 top.graphicsEngine = graphicsEngine;
 
 
@@ -147,7 +147,6 @@ graphicsEngine.load('3D/Graphics/Textures/metal_grate_rusty_1k.gltf/metal_grate_
         e.mesh.scale.set(player.children[0].radius * scaleFactor, player.children[0].radius * scaleFactor, player.children[0].radius * scaleFactor);
         graphicsEngine.addToScene(e.mesh);
     })
-
 });
 
 

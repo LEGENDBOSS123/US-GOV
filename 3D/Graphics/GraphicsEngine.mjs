@@ -112,7 +112,7 @@ var GraphicsEngine = class {
         this.sunlight.shadow.camera.right = range;
         this.sunlight.shadow.camera.top = range;
         this.sunlight.shadow.camera.bottom = -range;
-        this.sunlight.shadow.bias = -0.0001;
+        this.sunlight.shadow.bias = -0.00001;
         this.scene.add(this.sunlight);
         this.scene.add(this.sunlight.target);
 
