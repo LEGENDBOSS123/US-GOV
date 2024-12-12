@@ -312,7 +312,7 @@ var CollisionDetector = class {
 
 
 
-        var prevPos = box1.global.body.rotation.conjugate().multiplyVector3(sphere1.global.body.actualPreviousPosition.subtract(box1.global.body.actualPreviousPosition));
+        var prevPos = box1.global.body.rotation.conjugate().multiplyVector3(sphere1.global.body.previousPosition.subtract(box1.global.body.previousPosition));
 
         var delta = relativePos.subtract(prevPos);
 
@@ -395,6 +395,7 @@ var CollisionDetector = class {
                 //         contact.velocity = sphere1.getVelocityAtPosition(contact.point).subtractInPlace(box1.getVelocityAtPosition(contact.point));
                 //         this.addContact(contact);
                 //         return true;
+                
                 return contact;
             }
             return distanceSquared - sphere1.radius * sphere1.radius;
@@ -428,6 +429,7 @@ var CollisionDetector = class {
                 contact.body2 = box1;
                 contact.point = sphere1.global.body.position.subtract(contact.normal.scale(sphere1.radius));
                 contact.velocity = sphere1.getVelocityAtPosition(contact.point).subtractInPlace(box1.getVelocityAtPosition(contact.point));
+                
                 this.addContact(contact);
                 return true;
 
@@ -473,8 +475,7 @@ var CollisionDetector = class {
             contact.penetration = contact.normal.scale(sphere1.radius + contactPoint.distance(spherePos));
             contact.body1 = sphere1;
             contact.body2 = box1;
-
-            this.addContact(contact);
+            console.log(contact);
             return true;
         }
 

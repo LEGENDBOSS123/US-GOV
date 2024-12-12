@@ -163,7 +163,7 @@ player.spheres[0].preCollisionCallback = function (contact) {
     }
 }
 
-var mazeGen = new maze_gen(graphicsEngine, world);
+var mazeGen = new maze_gen(graphicsEngine, world, document);
 mazeGen.createFloor(player);
 mazeGen.createNode();
 for (var i = 0; i < 0; i++) {
