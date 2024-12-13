@@ -102,11 +102,11 @@ var CollisionDetector = class {
         for (var i = 0; i < this.contacts.length; i++) {
             var contact = this.contacts[i];
             if (!maxParentMap.has(contact.body1.maxParent.id)) {
-                maxParentMap.set(contact.body1.maxParent.id, { penetrationSum: 0, contacts: [], totalImpulse: new Vector3() });
+                maxParentMap.set(contact.body1.maxParent.id, { penetrationSum: 0, contacts: [] });
             }
 
             if (!maxParentMap.has(contact.body2.maxParent.id)) {
-                maxParentMap.set(contact.body2.maxParent.id, { penetrationSum: 0, contacts: [], totalImpulse: new Vector3() });
+                maxParentMap.set(contact.body2.maxParent.id, { penetrationSum: 0, contacts: [] });
             }
             contact.material = contact.body1.material.getCombined(contact.body2.material);
 
@@ -128,7 +128,6 @@ var CollisionDetector = class {
                     if (contact.body1.preCollisionCallback) {
                         contact.body1.preCollisionCallback(contact);
                     }
-                    maxParentMap.get(contact.body1.maxParent.id).totalImpulse.addInPlace(contact.impulse);
                     if (maxParentMap.get(contact.body1.maxParent.id).penetrationSum != 0) {
                         contact.body1.maxParent.applyForce(contact.impulse.scale(contact.penetration.magnitude() / maxParentMap.get(contact.body1.maxParent.id).penetrationSum), contact.point);
                     }
@@ -137,7 +136,6 @@ var CollisionDetector = class {
                     if (contact.body2.preCollisionCallback) {
                         contact.body2.preCollisionCallback(contact);
                     }
-                    maxParentMap.get(contact.body2.maxParent.id).totalImpulse.addInPlace(contact.impulse);
                     if (maxParentMap.get(contact.body2.maxParent.id).penetrationSum != 0) {
                         contact.body2.maxParent.applyForce(contact.impulse.scale(-contact.penetration.magnitude() / maxParentMap.get(contact.body2.maxParent.id).penetrationSum), contact.point);
                     }

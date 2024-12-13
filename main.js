@@ -116,13 +116,13 @@ var gravity = -0.2;
 
 var player = new Player({
     radius: 0.5,
-    moveStrength: new Vector3(0.5, 0.03, 0.5),
+    moveStrength: new Vector3(0.3, 0.05, 0.3),
     jumpStrength: 0.75,
     global: {
         body: {
             acceleration: new Vector3(0, gravity, 0),
             position: new Vector3(0,80,0),
-            linearDamping: new Vector3(0.06, 0, 0.06),
+            linearDamping: new Vector3(0.05, 0, 0.05),
             angularDamping: 1
         }
     },
@@ -190,7 +190,6 @@ for (var i = 0; i < 0; i++) {
                 box.setRestitution(0);
                 box.setFriction(0);
                 box.setLocalFlag(Composite.FLAGS.STATIC, true);
-                box.global.body.rotation = box.global.body.rotation.rotateByAngularVelocity(new Vector3(0, 0.5));
                 box.mesh = child.clone();
 
                 world.addComposite(box);
