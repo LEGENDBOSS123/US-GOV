@@ -150,15 +150,23 @@ graphicsEngine.load('3D/Graphics/Textures/metal_grate_rusty_1k.gltf/metal_grate_
 });
 
 
+
+
+
 world.addComposite(player);
+
 var canJump = false;
 
-player.spheres[0].preCollisionCallback = function (contact) {
-    if (contact.normal.dot(new Vector3(0, 1, 0)) < -0.75 && contact.body1.maxParent == this) {
-        canJump = true;
+player.spheres[0].postCollisionCallback = function (contact) {
+    if (contact.body1.maxParent == this.maxParent) {
+        if(contact.normal.dot(new Vector3(0,1,0)) > 0.75){
+            canJump = true;
+        }
     }
-    else if (contact.normal.dot(new Vector3(0, 1, 0)) > 0.75) {
-        canJump = true;
+    else{
+        if(contact.normal.dot(new Vector3(0,-1,0)) > 0.75){
+            canJump = true;
+        }
     }
 }
 
@@ -193,7 +201,7 @@ for (var i = 0; i < 0; i++) {
                             player.spawnPoint = Vector3.fromJSON(JSON.parse(localStorage["spawnPoint"]));
                         }
                     }
-                    box.preCollisionCallback = function (contact) {
+                    box.postCollisionCallback = function (contact) {
                         if (contact.body1.maxParent == player) {
                             player.spawnPoint = contact.body2.global.body.position;
                             localStorage["spawnPoint"] = JSON.stringify(player.spawnPoint.toJSON());

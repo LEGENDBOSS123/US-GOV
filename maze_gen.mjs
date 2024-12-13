@@ -255,8 +255,7 @@ class maze_gen {
             })
         }, THREE);
         box.setRestitution(0);
-        box.preCollisionCallback = function (contact) {
-
+        box.postCollisionCallback = function (contact) {
             if (contact.body1.maxParent == player || contact.body2.maxParent == player) {
                 player.respawn();
             }
@@ -543,7 +542,7 @@ class maze_gen {
 
 
 
-        box.preCollisionCallback = function (contact) {
+        box.postCollisionCallback = function (contact) {
             if(questionElement != null){
                 return;
             }
@@ -585,7 +584,7 @@ class maze_gen {
                 map: this.winMap
             })
         }, THREE);
-        box.preCollisionCallback = function (contact) {
+        box.postCollisionCallback = function (contact) {
             if (contact.body1.maxParent == player || contact.body2.maxParent == player) {
                 alert("you win");
                 player.respawn();
@@ -647,7 +646,7 @@ class maze_gen {
         box.setRestitution(0);
         box.setFriction(0);
         box.mesh.castShadow = true;
-        box.preCollisionCallback = function (contact) {
+        box.postCollisionCallback = function (contact) {
             
             if (contact.body1.maxParent == player || contact.body2.maxParent == player) {
                 if (questionElement != null) {

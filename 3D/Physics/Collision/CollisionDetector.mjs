@@ -175,6 +175,14 @@ var CollisionDetector = class {
                 contact.body2.translate(totalTranslation);
             }
         }
+
+        for (var [key, value] of maxParentMap) {
+            for (var i = 0; i < value.contacts.length; i++) {
+                var contact = value.contacts[i];
+                contact.body1.postCollisionCallback?.(contact);
+                contact.body2.postCollisionCallback?.(contact);
+            }
+        }
         this.contacts.length = 0;
     }
 
@@ -395,7 +403,6 @@ var CollisionDetector = class {
                 //         contact.velocity = sphere1.getVelocityAtPosition(contact.point).subtractInPlace(box1.getVelocityAtPosition(contact.point));
                 //         this.addContact(contact);
                 //         return true;
-                
                 return contact;
             }
             return distanceSquared - sphere1.radius * sphere1.radius;
@@ -429,7 +436,6 @@ var CollisionDetector = class {
                 contact.body2 = box1;
                 contact.point = sphere1.global.body.position.subtract(contact.normal.scale(sphere1.radius));
                 contact.velocity = sphere1.getVelocityAtPosition(contact.point).subtractInPlace(box1.getVelocityAtPosition(contact.point));
-                
                 this.addContact(contact);
                 return true;
 
@@ -441,7 +447,6 @@ var CollisionDetector = class {
             // }
 
         }
-
         if (!(relativePos.x >= dimensions.x || relativePos.y >= dimensions.y || relativePos.z >= dimensions.z || relativePos.x <= -dimensions.x || relativePos.y <= -dimensions.y || relativePos.z <= -dimensions.z)) {
             var penetrationValues = new Vector3(relativePos.x - dimensions.x, relativePos.y - dimensions.y, relativePos.z - dimensions.z);
             if (relativePos.x < 0) {
@@ -504,10 +509,49 @@ var CollisionDetector = class {
 
 
     handleSphereSphere(sphere1, sphere2) {
-        var distanceTo = sphere1.global.body.position.distance(sphere2.global.body.position);
-        if (distanceTo >= sphere1.radius + sphere2.radius) {
+
+        var minT = 0;
+        var maxT = 1;
+        var binarySearch = function (t, getData = false) {
+            var sphere1Pos = sphere1.global.body.previousPosition.lerp(sphere1.global.body.position, t);
+            var sphere2Pos = sphere2.global.body.previousPosition.lerp(sphere2.global.body.position, t);
+            var distanceSquared = sphere1Pos.subtract(sphere2Pos).magnitudeSquared();
+            if (getData) {
+                if(distanceSquared < sphere1.radius * sphere1.radius){
+                    return null;
+                }
+                var contact = new Contact();
+                contact.normal = sphere1Pos.subtract(sphere2Pos).normalizeInPlace();
+                if (contact.normal.magnitudeSquared() == 0) {
+                    contact.normal = new Vector3(1, 0, 0);
+                }
+                contact.point = sphere1.global.body.position.add(sphere2.global.body.position).scale(0.5);
+                contact.velocity = sphere1.getVelocityAtPosition(contact.point).subtractInPlace(sphere2.getVelocityAtPosition(contact.point));
+                contact.body1 = sphere1;
+                contact.body2 = sphere2;
+                contact.penetration = contact.normal.scale(sphere1.radius + sphere2.radius - Math.sqrt(distanceSquared));
+                return contact;
+            }
+            return distanceSquared - (sphere1.radius + sphere2.radius) * (sphere1.radius + sphere2.radius);
+        }.bind(this);
+        var t = 1;
+        for (var i = 0; i < 8; i++) {
+            t = (minT + maxT) / 2;
+            var result = binarySearch(t);
+            if (result > 0) {
+                minT = t;
+            } else {
+                maxT = t;
+            }
+        }
+
+        t = maxT;
+        var isColliding = binarySearch(t) < 0;
+        if (!isColliding) {
             return false;
         }
+        var distanceTo = sphere1.global.body.position.distance(sphere2.global.body.position);
+        
         var contact = new Contact();
         contact.normal = sphere1.global.body.position.subtract(sphere2.global.body.position).normalizeInPlace();
         if (contact.normal.magnitudeSquared() == 0) {

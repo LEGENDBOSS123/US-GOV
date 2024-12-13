@@ -71,16 +71,15 @@ var Player = class extends Composite {
     }
     respawn(){
         this.global.body.setPosition(this.spawnPoint.copy());
-        this.global.body.actualPreviousPosition = this.global.body;
-    
+        this.global.body.actualPreviousPosition = this.global.body.position.copy();
         this.global.body.setVelocity(new Vector3(0, 0, 0));
         this.global.body.angularVelocity.reset();
         this.global.body.rotation.reset();
         this.global.body.previousRotation.reset();
         this.global.body.netForce.reset();
+        this.global.body.netTorque.reset();
         this.syncAll();
-    }
-   
+    }   
 }
 
 
