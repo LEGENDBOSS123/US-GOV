@@ -112,11 +112,11 @@ var CollisionDetector = class {
 
             var contacts = maxParentMap.get(contact.body1.maxParent.id).contacts;
             contacts.push(contact);
-            maxParentMap.get(contact.body1.maxParent.id).penetrationSum += contact.penetration.magnitude();
+            maxParentMap.get(contact.body1.maxParent.id).penetrationSum += contact.penetration.magnitudeSquared();
 
             contacts = maxParentMap.get(contact.body2.maxParent.id).contacts;
             contacts.push(contact);
-            maxParentMap.get(contact.body2.maxParent.id).penetrationSum += contact.penetration.magnitude();
+            maxParentMap.get(contact.body2.maxParent.id).penetrationSum += contact.penetration.magnitudeSquared();
         }
 
 
@@ -129,7 +129,7 @@ var CollisionDetector = class {
                         contact.body1.preCollisionCallback(contact);
                     }
                     if (maxParentMap.get(contact.body1.maxParent.id).penetrationSum != 0) {
-                        contact.body1.maxParent.applyForce(contact.impulse.scale(contact.penetration.magnitude() / maxParentMap.get(contact.body1.maxParent.id).penetrationSum), contact.point);
+                        contact.body1.maxParent.applyForce(contact.impulse.scale(contact.penetration.magnitudeSquared() / maxParentMap.get(contact.body1.maxParent.id).penetrationSum), contact.point);
                     }
                 }
                 else {
@@ -137,7 +137,7 @@ var CollisionDetector = class {
                         contact.body2.preCollisionCallback(contact);
                     }
                     if (maxParentMap.get(contact.body2.maxParent.id).penetrationSum != 0) {
-                        contact.body2.maxParent.applyForce(contact.impulse.scale(-contact.penetration.magnitude() / maxParentMap.get(contact.body2.maxParent.id).penetrationSum), contact.point);
+                        contact.body2.maxParent.applyForce(contact.impulse.scale(-contact.penetration.magnitudeSquared() / maxParentMap.get(contact.body2.maxParent.id).penetrationSum), contact.point);
                     }
                 }
             }
@@ -154,14 +154,14 @@ var CollisionDetector = class {
                     var massRatio2 = contact.body2.maxParent.global.body.mass / totalMass;
                     massRatio2 = isNaN(massRatio2) ? 1 : massRatio2;
                     if(maxParentMap.get(contact.body1.maxParent.id).penetrationSum != 0) {
-                        totalTranslation.addInPlace(translation.scale(contact.penetration.magnitude() / maxParentMap.get(contact.body1.maxParent.id).penetrationSum * massRatio2));
+                        totalTranslation.addInPlace(translation.scale(contact.penetration.magnitudeSquared() / maxParentMap.get(contact.body1.maxParent.id).penetrationSum * massRatio2));
                     }
                 }
                 else {
                     var massRatio1 = contact.body1.maxParent.global.body.mass / totalMass;
                     massRatio1 = isNaN(massRatio1) ? 1 : massRatio1;
                     if(maxParentMap.get(contact.body2.maxParent.id).penetrationSum != 0) {
-                        totalTranslation.addInPlace(translation.scale(-contact.penetration.magnitude() / maxParentMap.get(contact.body2.maxParent.id).penetrationSum * massRatio1));
+                        totalTranslation.addInPlace(translation.scale(-contact.penetration.magnitudeSquared() / maxParentMap.get(contact.body2.maxParent.id).penetrationSum * massRatio1));
                     }
                 }
 

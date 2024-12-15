@@ -73,7 +73,7 @@ var node = class {
         this.right = null;
         this.correctPath = ["left", "middle", "right"][Math.floor(Math.random() * 3)];
         this.position = new Vector3(0, 0, 0);
-        this.direction = new Vector3(200, 0, 0);
+        this.direction = new Vector3(150, 0, 0);
 
 
         this.angleRotate = 60;
@@ -112,7 +112,18 @@ var node = class {
                 var path = this.createNewPath(i);
                 if (isCloseToAnyEndpoint(path.position.add(path.direction))) {
                     this[i] = null;
+                    var i = ["left", "middle", "right"][Math.floor(Math.random() * 3)];
+                    path = this.createNewPath(i);
+                    if (isCloseToAnyEndpoint(path.position.add(path.direction))) {
+                        this[i] = null;
+                        var i = ["left", "middle", "right"][Math.floor(Math.random() * 3)];
+                        path = this.createNewPath(i);
+                        if (isCloseToAnyEndpoint(path.position.add(path.direction))) {
+                            this[i] = null;
+                        }
+                    }
                 }
+
                 endpoints.add(JSON.stringify(path.position.add(path.direction).toJSON()));
                 path.correctPath = null;
             }
@@ -179,7 +190,7 @@ var node = class {
             }
             else {
                 var randomPath = ["left", "middle", "right"][Math.floor(Math.random() * 3)];
-                if (randomPath != this.correctPath) {
+                if (randomPath != this.correctPath && Math.random() > 0) {
 
                     var path = this.createNewPath(randomPath);
                     if (isCloseToAnyEndpoint(path.position.add(path.direction))) {
@@ -326,7 +337,7 @@ class maze_gen {
         // player.syncAll();
         questionElem.textContent = q.question;
         questionContainer.appendChild(questionElem);
-        
+
         var answerContainer = this.document.createElement("div");
         answerContainer.style.position = "absolute";
         answerContainer.style.bottom = "5px";
@@ -445,8 +456,8 @@ class maze_gen {
         answerElem2.style.position = "absolute";
         answerElem2.style.fontSize = "30px";
         answerElem2.style.width = "95%";
-        answerElem2Container.appendChild(answerElem2);  
-        
+        answerElem2Container.appendChild(answerElem2);
+
         var answerElem3 = document.createElement("div");
         answerElem3.style.color = "lightgreen";
         answerElem3.style.textAlign = "center";
@@ -457,7 +468,7 @@ class maze_gen {
         answerElem3.style.fontSize = "30px";
         answerElem3.style.width = "95%";
         answerElem3Container.appendChild(answerElem3);
-        
+
         var answerElem4 = document.createElement("div");
         answerElem4.style.color = "lightblue";
         answerElem4.style.textAlign = "center";
@@ -468,14 +479,14 @@ class maze_gen {
         answerElem4.style.fontSize = "30px";
         answerElem4.style.width = "95%";
         answerElem4Container.appendChild(answerElem4);
-        
-        
+
+
         answerElem1Container.style.display = "none";
         answerElem2Container.style.display = "none";
         answerElem3Container.style.display = "none";
         answerElem4Container.style.display = "none";
 
-        switch(node[node.correctPath].color) {
+        switch (node[node.correctPath].color) {
             case "red":
                 answerElem1Container.style.display = "block";
                 answerElem1.textContent = q.answer;
@@ -495,12 +506,12 @@ class maze_gen {
         }
         var e = ["left", "middle", "right"];
         var f = 0;
-        for(var i of e){
-            if(node[i] == null || node.correctPath == i){
+        for (var i of e) {
+            if (node[i] == null || node.correctPath == i) {
                 continue;
             }
             var a = node[i].color;
-            switch(a) {
+            switch (a) {
                 case "red":
                     answerElem1Container.style.display = "block";
                     answerElem1.textContent = wrong_answers[f];
@@ -520,10 +531,10 @@ class maze_gen {
             }
             f++;
         }
-        switch(node.color) {
+        switch (node.color) {
             case "red":
                 answerElem1Container.style.display = "block";
-                answerElem1.textContent =  wrong_answers[f];
+                answerElem1.textContent = wrong_answers[f];
                 break;
             case "yellow":
                 answerElem2Container.style.display = "block";
@@ -543,7 +554,7 @@ class maze_gen {
 
 
         box.postCollisionCallback = function (contact) {
-            if(questionElement != null){
+            if (questionElement != null) {
                 return;
             }
             if (contact.body1.maxParent == player || contact.body2.maxParent == player) {
@@ -647,7 +658,7 @@ class maze_gen {
         box.setFriction(0);
         box.mesh.castShadow = true;
         box.postCollisionCallback = function (contact) {
-            
+
             if (contact.body1.maxParent == player || contact.body2.maxParent == player) {
                 if (questionElement != null) {
                     document.body.removeChild(questionElement);

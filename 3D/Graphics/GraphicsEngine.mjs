@@ -1,9 +1,8 @@
 import * as THREE from "three";
-import { EffectComposer, RenderPass, ShaderPass} from "postprocessing";
+import { EffectComposer, RenderPass, ShaderPass, CopyPass, EffectPass, DepthEffect } from "postprocessing";
 import { N8AOPostPass } from './N8AO.mjs';
 import AutoTextureLoader from "./AutoTextureLoader.mjs";
-
-
+top.THREE = THREE;
 var GraphicsEngine = class {
     constructor(options) {
         this.window = options?.window ?? window;
@@ -34,8 +33,11 @@ var GraphicsEngine = class {
 
 
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(options?.camera?.fov ?? 80, this.aspectRatio(), options?.camera?.near ?? 0.1, options?.camera?.far ?? 4096);
-        
+        this.renderDistance = options?.renderDistance ?? 4096;
+        this.camera = new THREE.PerspectiveCamera(options?.camera?.fov ?? 90, this.aspectRatio(), options?.camera?.near ?? 0.1, options?.cameraFar ?? options?.camera?.far ?? this.renderDistance);
+        this.fog = new THREE.Fog(0xFFFFFF);
+        this.fogRatio = options?.fogRatio ?? 0.9;
+        this.scene.fog = this.fog;
         this.scene.add(this.camera);
 
         this.textureLoader = new AutoTextureLoader();
@@ -44,15 +46,27 @@ var GraphicsEngine = class {
         this.renderPass = new RenderPass(this.scene, this.camera);
         this.renderPass.renderToScreen = false;
         this.composer.addPass(this.renderPass);
+
         this.n8aoPass = new N8AOPostPass(this.scene, this.camera, this.screenWidth, this.screenHeight);
-        this.n8aoPass.configuration.aoRadius = 2;
-        this.n8aoPass.setQualityMode("Low");
+        this.n8aoPass.configuration.aoRadius = 1;
         this.n8aoPass.renderToScreen = false;
         this.composer.addPass(this.n8aoPass);
         this.lights = [];
         this.setupLights();
 
         this.updateScreenSize();
+
+        this.copyPass = new CopyPass();
+        this.composer.addPass(this.copyPass);
+
+    }
+
+    set cameraFar(far) {
+        this.camera.far = far;
+    }
+    
+    get cameraFar() {
+        return this.camera.far;
     }
 
     updateScreenSize() {
@@ -70,7 +84,8 @@ var GraphicsEngine = class {
         this.sunlight.position.copy(this.camera.position);
         this.sunlight.position.sub(this.sunlight.direction.clone().multiplyScalar(this.sunlight.shadow.camera.far * 0.5));
         this.sunlight.target.position.addVectors(this.sunlight.position, this.sunlight.direction);
-
+        this.fog.near = this.renderDistance * this.fogRatio;
+        this.fog.far = this.renderDistance;
         this.composer.render();
     }
 
@@ -80,7 +95,7 @@ var GraphicsEngine = class {
             pmremGenerator.compileEquirectangularShader();
             texture = pmremGenerator.fromEquirectangular(texture).texture;
             pmremGenerator.dispose();
-            
+
             if (setBackground) {
                 this.scene.background = texture;
             }
@@ -90,7 +105,7 @@ var GraphicsEngine = class {
             }
 
             texture.dispose();
-            
+
         }.bind(this));
     }
 
@@ -102,7 +117,7 @@ var GraphicsEngine = class {
         var range = 256;
 
         this.sunlight = new THREE.DirectionalLight(0xffffff, 1);
-        this.sunlight.direction = new THREE.Vector3(0,-1,0);
+        this.sunlight.direction = new THREE.Vector3(0, -1, 0);
         this.sunlight.castShadow = true;
         this.sunlight.shadow.mapSize.width = 4096;
         this.sunlight.shadow.mapSize.height = 4096;
@@ -128,11 +143,11 @@ var GraphicsEngine = class {
         this.sunlight.intensity = brightness;
     }
 
-    disableSunlight(){
+    disableSunlight() {
         this.sunlight.visible = false;
     }
 
-    enableSunlight(){
+    enableSunlight() {
         this.sunlight.visible = true;
     }
 
@@ -141,25 +156,16 @@ var GraphicsEngine = class {
         this.scene.add(object);
     }
 
-    load(url, onLoad, onProgress, onError){
+    load(url, onLoad, onProgress, onError) {
         this.textureLoader.load(url, onLoad, onProgress, onError);
     }
 
     enableAO() {
-        if(this.n8aoPass.enabled){
-            return;
-        }
         this.n8aoPass.enabled = true;
-        this.composer.addPass(this.n8aoPass);
     }
 
     disableAO() {
-        if(!this.n8aoPass.enabled){
-            return;
-        }
         this.n8aoPass.enabled = false;
-        this.composer.removePass(this.n8aoPass);
-
     }
 }
 

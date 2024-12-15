@@ -22,7 +22,7 @@ import AutoTextureLoader from "./3D/Graphics/AutoTextureLoader.mjs"
 
 import AssetManager from "./3D/Graphics/AssetManager.mjs"
 
-import Stats from "Stats"
+import Stats from "./3D/Web/Stats.mjs"
 import GraphicsEngine from "./3D/Graphics/GraphicsEngine.mjs";
 
 import maze_gen from "./maze_gen.mjs"
@@ -50,6 +50,8 @@ graphicsEngine.setBackgroundImage("3D/Graphics/Textures/autumn_field_puresky_8k.
 graphicsEngine.setSunlightDirection(new Vector3(-2, -8, -5));
 graphicsEngine.setSunlightBrightness(1);
 graphicsEngine.disableAO();
+graphicsEngine.renderDistance = 256;
+graphicsEngine.cameraFar = 1024;
 top.graphicsEngine = graphicsEngine;
 
 
