@@ -20,9 +20,25 @@
     <script type="module" src="main.js"></script>
     <div style="position: relative; width: 100%; height: 100%;">
         <canvas id="canvas"></canvas>
-        <img src="./3D/Graphics/Textures/shiftlockcursor.png" id="shiftlockcursor" 
-             style="pointer-events: none;display: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px;">
+        <img src="./3D/Graphics/Textures/shiftlockcursor.png" id="shiftlockcursor"
+            style="pointer-events: none;display: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px;">
     </div>
+    <div id="rulesScreen" style="display: flex; flex-direction: column; justify-content: center; align-items: center; 
+                                      position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+                                      background: rgba(0, 0, 0, 0.8); color: white; font-family: Arial, sans-serif; 
+                                      text-align: center; z-index: 10;">
+        <button id="closeButton" style="position: absolute; top: 20px; right: 20px; font-size: 16px; padding: 5px 10px; 
+                           background: red; color: white; border: none; cursor: pointer;" onclick="document.getElementById('rulesScreen').style.display = 'none';" >X</button>
+        <h1>US GOV Game Rules</h1>
+        <p>1. Use the WASD keys or arrow keys to move.</p>
+        <p>2. Press the Shift key to lock your cursor.</p>
+        <p>3. To adjust camera rotation, drag mouse or scroll</p>
+        <p>4. When you reach an intersection, the correct color will lead you forward</p>
+        <p>5. If you reach the end, you win!</p>
+        <p>6. Lava will restart your progress</p>
+        <p>7. The maze is randomly generated so if you refresh you can play again on a new maze</p>
+    </div>
+    
 </body>
 
 </html>
