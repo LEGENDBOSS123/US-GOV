@@ -237,7 +237,7 @@ class maze_gen {
         this.head.addFakes();
         this.head.color();
         this.head.intersections(this.createIntersection.bind(this), this.createWin.bind(this));
-        top.maze = this;
+        window.maze = this;
 
     }
 

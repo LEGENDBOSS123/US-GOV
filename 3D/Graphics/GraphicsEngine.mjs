@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { EffectComposer, RenderPass, ShaderPass, CopyPass, EffectPass, DepthEffect } from "postprocessing";
 import { N8AOPostPass } from './N8AO.mjs';
 import AutoTextureLoader from "./AutoTextureLoader.mjs";
-top.THREE = THREE;
+
 var GraphicsEngine = class {
     constructor(options) {
         this.window = options?.window ?? window;

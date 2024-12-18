@@ -52,7 +52,7 @@ graphicsEngine.setSunlightBrightness(1);
 graphicsEngine.disableAO();
 graphicsEngine.renderDistance = 256;
 graphicsEngine.cameraFar = 1024;
-top.graphicsEngine = graphicsEngine;
+window.graphicsEngine = graphicsEngine;
 
 
 var assetManager = new AssetManager({
@@ -134,7 +134,7 @@ var player = new Player({
         }
     }
 });
-top.player = player;
+window.player = player;
 
 graphicsEngine.load('3D/Graphics/Textures/metal_grate_rusty_1k.gltf/metal_grate_rusty_1k.gltf', function (gltf) {
     gltf.scene.traverse(function (child) {
