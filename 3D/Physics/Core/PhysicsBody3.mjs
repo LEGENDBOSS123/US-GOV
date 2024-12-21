@@ -126,7 +126,7 @@ var PhysicsBody3 = class {
     }
 
     static fromJSON(json, world) {
-        var body = new PhysicsBody3();
+        var body = new this();
         body.mass = json.mass;
         body.inverseMass = json.inverseMass;
         body.momentOfInertia = Matrix3.fromJSON(json.momentOfInertia);

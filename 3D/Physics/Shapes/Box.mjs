@@ -5,6 +5,7 @@ import Vector3 from "../Math3D/Vector3.mjs";
 import Quaternion from "../Math3D/Quaternion.mjs";
 
 var Box = class extends Composite {
+    static name = "BOX";
     constructor(options) {
         super(options);
         this.shape = this.constructor.SHAPES.BOX;
@@ -116,6 +117,24 @@ var Box = class extends Composite {
         this.calculateGlobalHitbox();
         return this;
     }
+
+    toJSON(){
+        var composite = super.toJSON();
+        composite.width = this.width;
+        composite.height = this.height;
+        composite.depth = this.depth;
+        return composite;
+    }
+
+    static fromJSON(json, world){
+        var box = super.fromJSON(json, world);
+        box.width = json.width;
+        box.height = json.height;
+        box.depth = json.depth;
+        return box;
+    }
 };
+
+Composite.REGISTER_SHAPE(Box);
 
 export default Box;

@@ -30,8 +30,8 @@ import maze_gen from "./maze_gen.mjs"
 import * as THREE from "three";
 
 
-
-
+top.Box = Box;
+top.World = World;
 var stats = new Stats();
 stats.showPanel(0);
 document.body.appendChild(stats.dom);
@@ -110,6 +110,11 @@ window.addEventListener('keydown', function (e) {
 
 
 var world = new World();
+top.world = world;
+top.setWorld = function (w) {
+    world = w;
+    return world;
+}
 world.setIterations(4);
 
 

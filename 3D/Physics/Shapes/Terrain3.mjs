@@ -3,6 +3,7 @@ import Vector3 from "../Math3D/Vector3.mjs";
 import Matrix3 from "../Math3D/Matrix3.mjs";
 import Triangle from "./Triangle.mjs";
 var Terrain3 = class extends Composite {
+    static name = "TERRAIN3";
     constructor(options) {
         super(options);
 
@@ -437,5 +438,7 @@ var Terrain3 = class extends Composite {
         this.mesh.add(backMesh);
     }
 };
+
+Composite.REGISTER_SHAPE(Terrain3);
 
 export default Terrain3;

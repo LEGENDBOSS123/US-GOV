@@ -16,16 +16,20 @@ var Composite = class {
         OCCUPIES_SPACE: 1 << 6
     };
 
-    static SHAPES = {
-        SPHERE: 0,
-        TERRAIN3: 1,
-        COMPOSITE: 2,
-        POINT: 3,
-        BOX: 4
+    static SHAPES = {};
+
+    static SHAPES_CLASSES = {};
+
+    static SHAPE_MAX_ID = 0;
+    static REGISTER_SHAPE(obj) {
+        this.SHAPES[obj.name] = this.SHAPE_MAX_ID++;
+        this.SHAPES_CLASSES[this.SHAPES[obj.name]] = obj;
     }
 
+    static name = "COMPOSITE";
+
     constructor(options) {
-        this.id = options?.id ?? 0;
+        this.id = options?.id ?? -1;
         this.shape = options?.shape ?? this.constructor.SHAPES.COMPOSITE;
 
         this.world = options?.world ?? null;
@@ -424,7 +428,7 @@ var Composite = class {
         var composite = {};
         composite.id = this.id;
         composite.shape = this.shape;
-        composite.world = this.world.id;
+        composite.world = this.world?.id ?? null;
         composite.parent = this.parent?.id ?? null;
         composite.maxParent = this.maxParent.id;
         composite.children = [];
@@ -444,25 +448,37 @@ var Composite = class {
         return composite;
     }
 
-    fromJSON(json, world) {
-        this.world = world;
-        this.id = json.id;
-        this.shape = json.shape;
-        this.parent = world.all[json.parent];
-        this.maxParent = world.all[json.maxParent];
-        this.children = [];
+    static fromJSON(json, world) {
+        var composite = new this();
+        composite.world = world;
+        composite.id = json.id;
+        composite.shape = json.shape;
+        composite.parent = json.parent;
+        composite.maxParent = json.maxParent;
+        composite.children = [];
         for(var i of json.children) {
-            this.children.push(world.all[i]);
+            composite.children.push(i);
         }
-        this.material = json.material.fromJSON();
-        this.global.body.fromJSON(json.global.body);
-        this.global.hitbox.fromJSON(json.global.hitbox);
-        this.global.flags = json.global.flags;
-        this.local.body.fromJSON(json.local.body);
-        this.local.hitbox.fromJSON(json.local.hitbox);
-        this.local.flags = json.local.flags;
-        this.mesh = json.mesh;
+        composite.material = Material.fromJSON(json.material, world);
+        composite.global.body = PhysicsBody3.fromJSON(json.global.body, world);
+        composite.global.hitbox = Hitbox3.fromJSON(json.global.hitbox);
+        composite.global.flags = json.global.flags;
+        composite.local.body = PhysicsBody3.fromJSON(json.local.body, world);
+        composite.local.hitbox = Hitbox3.fromJSON(json.local.hitbox, world);
+        composite.local.flags = json.local.flags;
+        composite.mesh = json.mesh;
+        return composite;
+    }
+
+    updateIDsFromJSON(world) {
+        this.parent = this.parent == null ? null : world.getByID(this.parent);
+        this.maxParent = world.getByID(this.maxParent);
+        for (var i = 0; i < this.children.length; i++) {
+            this.children[i] = world.getByID(this.children[i]);
+        }
     }
 }
+
+Composite.REGISTER_SHAPE(Composite);
 
 export default Composite;

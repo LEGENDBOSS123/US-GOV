@@ -1,5 +1,6 @@
 import SpatialHash from "../Broadphase/SpatialHash.mjs";
 import CollisionDetector from "../Collision/CollisionDetector.mjs";
+import Composite from "../Shapes/Composite.mjs";
 
 var World = class {
     constructor(options) {
@@ -10,12 +11,7 @@ var World = class {
 
         this.iterations = options?.iterations ?? 1;
 
-        this.id = options?.id ?? (this.maxID++);
         this.all = options?.all ?? {};
-
-        if (!(this in this.all)) {
-            this.all[this.id] = this;
-        }
 
         this.composites = options?.composites ?? [];
         this.spatialHash = options?.spatialHash ?? new SpatialHash({ world: this });
@@ -70,6 +66,10 @@ var World = class {
         }
     }
 
+    getByID(id) {
+        return this.all[id];
+    }
+
     toJSON(){
         var world = {};
 
@@ -78,11 +78,10 @@ var World = class {
         world.deltaTimeSquared = this.deltaTimeSquared;
         world.inverseDeltaTime = this.inverseDeltaTime;
         world.iterations = this.iterations;
-        world.id = this.id;
         world.all = [];
 
         for (var i in this.all) {
-            world.all.push(this.all[i].toJSON());
+            world.all.push(this.getByID(i).toJSON());
         }
 
         world.composites = [];
@@ -93,6 +92,35 @@ var World = class {
         world.spatialHash = this.spatialHash.toJSON();
         world.collisionDetector = this.collisionDetector.toJSON();
 
+        return world;
+    }
+
+    static fromJSON(json){
+        var world = new this();
+
+        world.maxID = json.maxID;
+        world.deltaTime = json.deltaTime;
+        world.deltaTimeSquared = json.deltaTimeSquared;
+        world.inverseDeltaTime = json.inverseDeltaTime;
+        world.iterations = json.iterations;
+        world.all = {};
+
+        for (var i in json.all) {
+            world.all[i] = Composite.SHAPES_CLASSES[json.all[i].shape].fromJSON(json.all[i], world);
+        }
+
+        for (var i in world.all) {
+            console.log(world.all[i].maxParent);
+            world.all[i].updateIDsFromJSON(world);
+        }
+
+        world.composites = [];
+        for (var i in json.composites) {
+            world.composites.push(world.getByID(json.composites[i]));
+        }
+
+        world.spatialHash = SpatialHash.fromJSON(json.spatialHash, world);
+        world.collisionDetector = CollisionDetector.fromJSON(json.collisionDetector, world);
         return world;
     }
 };

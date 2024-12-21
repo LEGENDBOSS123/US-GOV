@@ -2,6 +2,7 @@ import Composite from "./Composite.mjs";
 import Matrix3 from "../Math3D/Matrix3.mjs";
 
 var Point = class extends Composite {
+    static name = "POINT";
     constructor(options) {
         super(options);
         this.shape = this.constructor.SHAPES.POINT;
@@ -23,6 +24,18 @@ var Point = class extends Composite {
         var geometry = options?.geometry ?? new THREE.SphereGeometry(options?.radius ?? 1, 16, 16);
         this.mesh = new THREE.Mesh(geometry, options?.material ?? new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true }));
     }
+
+    toJSON(){
+        var composite = super.toJSON();
+        return composite;
+    }
+
+    static fromJSON(json, world){
+        var point = new this(new Composite(json));
+        return box;
+    }
 };
+
+Point.REGISTER_SHAPE(Point);
 
 export default Point;

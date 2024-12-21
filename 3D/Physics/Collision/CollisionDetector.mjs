@@ -10,7 +10,7 @@ var CollisionDetector = class {
         this.pairs = options?.pairs ?? new Map();
         this.world = options?.world ?? null;
         this.contacts = options?.contacts ?? [];
-        this.handlers = [];
+        this.handlers = {};
         this.initHandlers();
     }
 
@@ -64,17 +64,15 @@ var CollisionDetector = class {
         this.handlers[Composite.SHAPES.SPHERE][Composite.SHAPES.SPHERE] = this.handleSphereSphere;
         this.handlers[Composite.SHAPES.SPHERE][Composite.SHAPES.TERRAIN3] = this.handleSphereTerrain;
         this.handlers[Composite.SHAPES.SPHERE][Composite.SHAPES.BOX] = this.handleSphereBox;
-
         this.handlers[Composite.SHAPES.TERRAIN3] = {};
         this.handlers[Composite.SHAPES.TERRAIN3][Composite.SHAPES.POINT] = this.handleTerrainPoint;
-
         this.handlers[Composite.SHAPES.BOX] = {};
     }
 
     handle(shape) {
         var query = this.world.spatialHash.query(shape.id);
         for (var i of query) {
-            this.addPair(shape, this.world.all[i]);
+            this.addPair(shape, this.world.getByID(i));
         }
     }
 
@@ -742,6 +740,16 @@ var CollisionDetector = class {
         return false;
     }
 
+    toJSON(){
+        return {};
+    }
+
+    static fromJSON(json, world){
+        var collisionDetector = new CollisionDetector({
+            world: world
+        });
+        return collisionDetector;
+    }
 };
 
 

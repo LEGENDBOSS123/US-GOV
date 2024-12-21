@@ -3,6 +3,9 @@ import Vector3 from "../Math3D/Vector3.mjs";
 import Matrix3 from "../Math3D/Matrix3.mjs";
 
 var Sphere = class extends Composite {
+
+    static name = "SPHERE";
+
     constructor(options) {
         super(options);
         this.shape = this.constructor.SHAPES.SPHERE;
@@ -30,19 +33,33 @@ var Sphere = class extends Composite {
 
     calculateLocalMomentOfInertia() {
         this.local.body.momentOfInertia = Matrix3.zero();
-        var I = (2/5) * this.local.body.mass * this.radius * this.radius;
+        var I = (2 / 5) * this.local.body.mass * this.radius * this.radius;
         this.local.body.momentOfInertia.set(0, 0, I);
         this.local.body.momentOfInertia.set(1, 1, I);
         this.local.body.momentOfInertia.set(2, 2, I);
         return this.local.body.momentOfInertia;
     }
 
-    setMesh(options, THREE){
+    setMesh(options, THREE) {
         var geometry = options?.geometry ?? new THREE.SphereGeometry(this.radius, 32, 32);
         this.setColorGeometry(geometry, THREE);
         this.mesh = new THREE.Mesh(geometry, options?.material ?? new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true }));
         this.updateMesh();
     }
+
+    toJSON(){
+        var composite = super.toJSON();
+        composite.radius = this.radius;
+        return composite;
+    }
+
+    static fromJSON(json, world){
+        var sphere = super.fromJSON(json, world);
+        sphere.radius = json.radius;
+        return sphere;
+    }
 };
+
+Composite.REGISTER_SHAPE(Sphere);
 
 export default Sphere;

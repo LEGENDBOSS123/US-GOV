@@ -83,6 +83,37 @@ var Contact = class {
         c.combinedMaterial = this.combinedMaterial;
         return c;
     }
+
+    toJSON() {
+        return {
+            normal: this.normal.toJSON(),
+            penetration: this.penetration,
+            body1: this.body1.id,
+            body2: this.body2.id,
+            point: this.point.toJSON(),
+            velocity: this.velocity.toJSON(),
+            solved: this.solved,
+            impulse: this.impulse.toJSON(),
+            combinedMaterial: this.combinedMaterial.toJSON()
+        }
+    }
+
+    static fromJSON(json, world) {
+        var c = new this();
+        c.normal = new Vector3().fromJSON(json.normal);
+        c.penetration = json.penetration;
+
+        c.body1 = world.getByID(json.body1);
+        c.body2 = world.getByID(json.body2);
+        c.point = new Vector3().fromJSON(json.point);
+        c.velocity = new Vector3().fromJSON(json.velocity);
+
+        c.solved = json.solved;
+        c.impulse = new Vector3().fromJSON(json.impulse);
+
+        c.combinedMaterial = new Material().fromJSON(json.combinedMaterial);
+        return c;
+    }
 };
 
 export default Contact;
